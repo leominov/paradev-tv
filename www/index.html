@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html ng-app="myApp" ng-csp="">
+<head>
+    <title>ParadevTV – Добро пожаловать</title>
+    <meta http-equiv=Content-Type content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://www.stathat.com/css/l2/bootstrap.min.css">
+    <link href="/css/narrow.css" rel="stylesheet" media="screen">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Fira+Sans:300,400,500,700" rel="stylesheet" type="text/css">
+    <style>
+    .ng-hide {
+        display: none;
+    }
+    .form-group {
+        text-align: left;
+    }
+
+    .form-group input[type="text"] {
+        margin-bottom: 4px;
+    }
+    </style>
+</head>
+<body>
+    <div class="container-narrow" ng-controller="AppController">
+
+      <div class="jumbotron">
+            <h1>paradev/tv</h1>
+            <p class="lead" ng-hide="stepper">Легкий способ смотреть телевидение на ПК с регистрацией, но без СМС.</p>
+            <div ng-show="preloader">
+                <img src="/img/preloader.gif" alt="">
+            </div>
+
+            <div class="ng-hide" ng-show="!preloader">
+                <div ng-hide="check_error">
+                    <p ng-hide="stepper" style="padding-top: 20px;">
+                        <a class="btn btn-lg btn-warning" ng-click="Run('signin')" role="button">Войти</a>
+                        <a class="btn btn-lg btn-success" ng-show="allow_new_users" ng-click="Run('registration')" role="button">Зарегистрироваться</a>
+                    </p>
+
+                    <div class="ng-hide" ng-show="stepper">
+                        <div ng-show="user_form">
+                            <h2 ng-show="type_run == 'signin'">Авторизация</h2>
+                            <h2 ng-show="type_run == 'registration'">Регистрация</h2>
+                            <p class="lead" style="text-align: left;">
+                                <form name="reg">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" ng-model="reg_login" id="exampleInputLogin1" placeholder="Логин" autofocus ng-required="true" ng-minlength="2">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="password" class="form-control" ng-model="reg_password" id="exampleInputPassword1" placeholder="Пароль" ng-required="true" ng-minlength="2">
+                                    </div>
+                                </form>
+                            </p>
+                            <p>
+                                <a class="btn btn-lg btn-success" ng-click="Done(type_run)" role="button" ng-disabled="reg.$invalid">Ок</a>
+                                <a class="btn btn-lg btn-danger" ng-click="Undone()" role="button">Отмена</a>
+                            </p>
+                        </div>
+
+                        <div class="ng-hide" ng-show="playlist">
+                            <p class="lead" style="text-align: left;">
+                                Привет, {{user.login}}, перейду сразу к делу:<br>
+                                1. Запусти VLC;<br>
+                                2. В главном меню перейди File / Open Network;<br>
+                                3. В поле URL укажи:<br>
+                                <pre>http://tv.paradev.ru/playlist.xspf?token={{user.token}}</pre>
+                            </p>
+                            <p style="text-align: left;">
+                                Есть вариант для продвинутых, {{user.login}}!<br>
+                            </p>
+                            <p>
+                                <a class="btn btn-lg btn-link" ng-hide="show_pro" ng-click="show_pro = true" role="button">Какой такой вариант?</a>
+                            </p>
+                            <p class="ng-hide" style="text-align: left;" ng-show="show_pro">
+                                1. Запусти VLC;<br>
+                                2. Открой расширенные настройки;<br>
+                                3. Перейди в раздел Playlist;<br>
+                                4. Убери галочку с Auto play;<br>
+                                5. В Default stream укажи:<br>
+                                <pre class="ng-hide" ng-show="show_pro">http://tv.paradev.ru/playlist.xspf?token={{user.token}}</pre>
+                            </p>
+                            <p>
+                                <a class="btn btn-lg btn-danger" ng-click="Signout()" role="button">Выход</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ng-hide" ng-show="check_error">
+                    <p class="lead" ng-show="error_code" ng-switch="error_code">
+                        <span ng-switch-when="allow_new_users">Регистрация новых пользователей преостановлена.</span>
+                        <span ng-switch-when="login_password">Ошибка ввода логина или пароля.</span>
+                        <span ng-switch-when="inlogin_error">Пользователь с таким логином уже существует.</span>
+                        <span ng-switch-when="login_error">Пользователь с таким логином не найден.</span>
+                        <span ng-switch-when="auth_error">Неверно указан логин или пароль.</span>
+                        <span ng-switch-default>Сервис временно недоступен.</span>
+                    </p>
+                    <p>
+                        <a class="btn btn-lg btn-success" ng-click="Undone()" role="button">Ок</a>
+                    </p>
+                </div>
+            </div>
+      </div>
+
+        <div class="row marketing">
+            <div class="col-lg-12">
+                <div>
+                    <h3><i class="icon-globe icon-large"></i> Ограничения использования</h3>
+                    <p class="lead">
+                        На данный момент сервис работает только для пользователей сетей провайдера Планета и их партнеров.
+                    </p>
+                </div>
+
+                <div>
+                    <h3><i class="icon-signal icon-large"></i> Статистика</h3>
+                    <p>
+                        295 каналов, из которых 72 в HD.<br>
+                        25 радиостанций.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    <div class="footer text-center">
+        <a href="mailto:leoderoko@gmail.com">поддержка</a> / <a href="http://xspf.org/applications/">поддерживаемые плееры</a> / <a href="http://keikogi.ru/">кейкоги</a>
+      </div>
+
+    </div>
+    <script type="text/javascript" src="/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/bower_components/angular-cookies/angular-cookies.min.js"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript" src="/js/controllers.js"></script>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function (d, w, c) {
+            (w[c] = w[c] || []).push(function() {
+                try {
+                    w.yaCounter33685454 = new Ya.Metrika({
+                        id:33685454,
+                        clickmap:true,
+                        trackLinks:true,
+                        accurateTrackBounce:true
+                    });
+                } catch(e) { }
+            });
+
+            var n = d.getElementsByTagName("script")[0],
+                s = d.createElement("script"),
+                f = function () { n.parentNode.insertBefore(s, n); };
+            s.type = "text/javascript";
+            s.async = true;
+            s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+            if (w.opera == "[object Opera]") {
+                d.addEventListener("DOMContentLoaded", f, false);
+            } else { f(); }
+        })(document, window, "yandex_metrika_callbacks");
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/33685454" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+</body>
+</html>
